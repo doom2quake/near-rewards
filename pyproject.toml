@@ -1,0 +1,19 @@
+[project]
+name = "settlemint"
+version = "0.1.0"
+description = "Settlemint: the off-chain half of a self-settling event market for NEAR, milestone 1."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["settlemint*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
