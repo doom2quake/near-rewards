@@ -1,0 +1,102 @@
+{
+  "network": "offline-fixture (deterministic mirror of NEAR testnet flow)",
+  "note": "Produced by scripts/record_run.py against the offline NEAR client, which runs the same settlement arithmetic as contract/src/lib.rs. No key is shipped, so no public testnet receipt exists yet; the live backend targets NEAR testnet only.",
+  "contract": "settlemint (WASM built from contract/, 205 KB release)",
+  "event_id": 0,
+  "resolver": "resolver.testnet",
+  "final_event": {
+    "resolver": "resolver.testnet",
+    "closes_at": 2000000000000000000,
+    "phase": "Settled",
+    "outcome": "Yes",
+    "pool_yes": 3000000000000000000000000,
+    "pool_no": 2000000000000000000000000,
+    "escrow": 0,
+    "unclaimed_win_stake": 0
+  },
+  "conservation": {
+    "total_staked_yocto": 5000000000000000000000000,
+    "total_paid_yocto": 5000000000000000000000000,
+    "balanced": true,
+    "escrow_remaining": 0
+  },
+  "payouts": {
+    "alice.testnet": 3333333333333333333333333,
+    "carol.testnet": 1666666666666666666666667
+  },
+  "steps": [
+    {
+      "method": "create_event",
+      "args": {
+        "resolver": "resolver.testnet",
+        "closes_at": 2000000000000000000
+      },
+      "caller": "creator.testnet",
+      "result": 0,
+      "note": "open a Yes/No market with a named resolver"
+    },
+    {
+      "method": "take_position",
+      "args": {
+        "event_id": 0,
+        "side": "Yes",
+        "deposit": 2000000000000000000000000
+      },
+      "caller": "alice.testnet",
+      "result": null,
+      "note": "alice.testnet stakes 2000000000000000000000000 yocto on Yes"
+    },
+    {
+      "method": "take_position",
+      "args": {
+        "event_id": 0,
+        "side": "Yes",
+        "deposit": 1000000000000000000000000
+      },
+      "caller": "carol.testnet",
+      "result": null,
+      "note": "carol.testnet stakes 1000000000000000000000000 yocto on Yes"
+    },
+    {
+      "method": "take_position",
+      "args": {
+        "event_id": 0,
+        "side": "No",
+        "deposit": 2000000000000000000000000
+      },
+      "caller": "bob.testnet",
+      "result": null,
+      "note": "bob.testnet stakes 2000000000000000000000000 yocto on No"
+    },
+    {
+      "method": "resolve",
+      "args": {
+        "event_id": 0,
+        "outcome": "Yes"
+      },
+      "caller": "resolver.testnet",
+      "result": null,
+      "note": "resolver records outcome Yes (only after close)"
+    },
+    {
+      "method": "settle",
+      "args": {
+        "event_id": 0,
+        "account": "alice.testnet"
+      },
+      "caller": "operator.testnet",
+      "result": 3333333333333333333333333,
+      "note": "pay alice.testnet their pro-rata share (3333333333333333333333333 yocto)"
+    },
+    {
+      "method": "settle",
+      "args": {
+        "event_id": 0,
+        "account": "carol.testnet"
+      },
+      "caller": "operator.testnet",
+      "result": 1666666666666666666666667,
+      "note": "pay carol.testnet their pro-rata share (1666666666666666666666667 yocto)"
+    }
+  ]
+}
