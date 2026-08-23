@@ -1,0 +1,359 @@
+<title>Settlemint, a self-settling event market on NEAR</title>
+<style>
+  :root {
+    --bg: #0B0E11; --panel: #141A1F; --panel2: #10151A; --line: #233038;
+    --text: #EAF2F0; --muted: #7C8B94; --faint: #56666E;
+    --mint: #00EC97; --mint-dim: #0a7a53; --cyan: #5BC8FF; --amber: #FFB454; --red: #FF6B7A;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background:
+      radial-gradient(1000px 520px at 78% -10%, #0e2820 0%, rgba(11,14,17,0) 60%),
+      var(--bg);
+    color: var(--text); font-family: var(--sans); line-height: 1.5;
+    -webkit-font-smoothing: antialiased; min-height: 100vh;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 46px 24px 72px; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .24em; text-transform: uppercase; color: var(--mint); margin: 0 0 12px; }
+  h1 { font-size: clamp(30px, 5.2vw, 48px); line-height: 1.02; letter-spacing: -.025em; margin: 0; font-weight: 800; text-wrap: balance; }
+  .thesis { color: var(--muted); font-size: 17px; max-width: 64ch; margin: 16px 0 0; }
+  .thesis b { color: var(--text); font-weight: 600; }
+
+  .card { background: linear-gradient(180deg, var(--panel), var(--panel2)); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+  .lbl { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  /* market hero */
+  .market { margin-top: 36px; }
+  .market-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .qtitle { font-size: 21px; font-weight: 680; margin: 8px 0 0; letter-spacing: -.01em; }
+  .phase-pill { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; transition: color .3s, border-color .3s, background .3s; }
+  .phase-pill.open { color: var(--cyan); border-color: #24505f; background: #0d1e26; }
+  .phase-pill.resolved { color: var(--amber); border-color: #5a4223; background: #241a0d; }
+  .phase-pill.settled { color: var(--mint); border-color: var(--mint-dim); background: #06231a; }
+
+  .pools { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+  .pool { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: #0d1217; position: relative; overflow: hidden; }
+  .pool .side { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+  .pool.yes .side { color: var(--mint); }
+  .pool.no .side { color: var(--red); }
+  .pool .amt { font-family: var(--mono); font-size: 22px; font-variant-numeric: tabular-nums; margin-top: 8px; letter-spacing: -.02em; }
+  .pool .unit { color: var(--faint); font-size: 12px; }
+  .pool .bar { height: 4px; border-radius: 4px; margin-top: 12px; background: #1a2229; overflow: hidden; }
+  .pool .bar span { display: block; height: 100%; width: 0; transition: width .8s cubic-bezier(.22,.61,.36,1); }
+  .pool.yes .bar span { background: var(--mint); }
+  .pool.no .bar span { background: var(--red); }
+  .pool.win { box-shadow: 0 0 0 1px var(--mint-dim), 0 0 34px -8px rgba(0,236,151,.5); }
+  .pool.lose { opacity: .55; }
+
+  /* conservation meter, the hero moment */
+  .conserve { margin-top: 22px; border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: #0d1217; }
+  .conserve-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .conserve .val { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--muted); }
+  .meter { height: 10px; border-radius: 6px; background: #1a2229; margin-top: 14px; overflow: hidden; display: flex; }
+  .meter i { display: block; height: 100%; width: 0; transition: width .9s cubic-bezier(.22,.61,.36,1); }
+  .meter i.paid { background: linear-gradient(90deg, var(--mint-dim), var(--mint)); }
+  .meter i.dust { background: var(--amber); }
+  .conserve-note { margin-top: 12px; font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .tick { color: var(--mint); font-weight: 800; }
+  .zero-strand { color: var(--mint); font-weight: 600; }
+
+  .controls { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
+  button { font-family: var(--sans); font-weight: 650; font-size: 14px; border-radius: 11px; border: 1px solid transparent; padding: 12px 20px; cursor: pointer; transition: transform .06s, background .2s, border-color .2s, color .2s; }
+  button:active { transform: translateY(1px); }
+  button:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+  .btn-run { background: var(--mint); color: #04140d; }
+  .btn-run:hover { background: #2af0a8; }
+  .btn-ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--mint-dim); }
+  .runhint { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+
+  /* three column info strip */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 720px) { .grid, .pools { grid-template-columns: 1fr; } }
+
+  /* agent activity log */
+  .log { list-style: none; margin: 14px 0 0; padding: 0; font-family: var(--mono); font-size: 12.5px; }
+  .log li { display: grid; grid-template-columns: 108px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); opacity: .25; transition: opacity .35s; }
+  .log li.done { opacity: 1; }
+  .log .m { font-weight: 700; letter-spacing: .02em; }
+  .log .m.create_event { color: var(--cyan); }
+  .log .m.take_position { color: var(--text); }
+  .log .m.resolve { color: var(--amber); }
+  .log .m.settle { color: var(--mint); }
+  .log .m.void_event { color: var(--red); }
+  .log .d { color: var(--muted); word-break: break-word; }
+  .log .d .who { color: var(--faint); }
+
+  /* artifacts */
+  .arts { list-style: none; margin: 14px 0 0; padding: 0; }
+  .arts li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; }
+  .arts .k { color: var(--muted); }
+  .arts .v { color: var(--text); font-variant-numeric: tabular-nums; text-align: right; }
+  .arts .v.ok { color: var(--mint); }
+
+  /* on-chain history */
+  .events { margin-top: 16px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-family: var(--mono); font-size: 12.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+  td.amt { text-align: right; font-variant-numeric: tabular-nums; }
+  .evtag { font-weight: 700; }
+  .evtag.EventCreated { color: var(--cyan); }
+  .evtag.PositionTaken { color: var(--text); }
+  .evtag.EventResolved { color: var(--amber); }
+  .evtag.Settled { color: var(--mint); }
+  .evtag.EventFinalized { color: var(--mint); }
+
+  .section-h { margin: 42px 0 0; display: flex; align-items: baseline; gap: 12px; }
+  .section-h h2 { font-size: 15px; margin: 0; font-weight: 700; letter-spacing: -.01em; }
+  .section-h .lbl { color: var(--faint); }
+
+  footer { margin-top: 48px; color: var(--faint); font-size: 12.5px; font-family: var(--mono); line-height: 1.7; border-top: 1px solid var(--line); padding-top: 18px; }
+  footer b { color: var(--muted); font-weight: 600; }
+  a { color: var(--cyan); text-decoration: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pool .bar span, .meter i, .log li, .phase-pill { transition: none; }
+  }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Settlemint &middot; NEAR Protocol</p>
+  <h1>A market that settles itself, to the last yocto.</h1>
+  <p class="thesis">
+    One resolver key opens a Yes/No event market on NEAR. Stakers commit yoctoNEAR
+    while it is open. When the outcome is known, an operator agent
+    resolves once and pays every winner <b>pro rata in a single pass</b>. The last
+    winner sweeps the rounding dust, so escrow lands at exactly zero and no stake
+    is ever stranded. If the resolver never shows up, anyone can void the market
+    after a grace window and every staker withdraws their own stake.
+    Press run and watch the escrow drain to zero.
+  </p>
+
+  <!-- HERO: the live market -->
+  <section class="card market">
+    <div class="market-head">
+      <div>
+        <span class="lbl">Event #0 &middot; resolver.testnet</span>
+        <p class="qtitle">Does the launch ship before the close block?</p>
+      </div>
+      <span class="phase-pill open" id="phase">Open</span>
+    </div>
+
+    <div class="pools">
+      <div class="pool yes" id="poolYes">
+        <div class="side">Yes</div>
+        <div class="amt"><span id="amtYes">0</span> <span class="unit">NEAR</span></div>
+        <div class="bar"><span id="barYes"></span></div>
+      </div>
+      <div class="pool no" id="poolNo">
+        <div class="side">No</div>
+        <div class="amt"><span id="amtNo">0</span> <span class="unit">NEAR</span></div>
+        <div class="bar"><span id="barNo"></span></div>
+      </div>
+    </div>
+
+    <div class="conserve">
+      <div class="conserve-top">
+        <span class="lbl">Escrow conservation</span>
+        <span class="val"><span id="paidNear">0</span> / <span id="stakedNear">0</span> NEAR paid</span>
+      </div>
+      <div class="meter"><i class="paid" id="mPaid"></i><i class="dust" id="mDust"></i></div>
+      <div class="conserve-note" id="cnote">
+        <span class="tick">&bull;</span> Escrow held: <span id="escrow" style="font-family:var(--mono)">0</span> yocto
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn-run" id="run">Run settlement</button>
+      <button class="btn-ghost" id="reset">Reset</button>
+      <span class="runhint" id="hint">7 calls: open, 3 stakes, resolve, 2 settles</span>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <span class="lbl">Agent activity &middot; NEAR RPC calls</span>
+      <ul class="log" id="log"></ul>
+    </section>
+    <section class="card">
+      <span class="lbl">Artifacts in this repo</span>
+      <ul class="arts">
+        <li><span class="k">contract/src/lib.rs</span><span class="v">NEAR Rust core</span></li>
+        <li><span class="k">cargo test</span><span class="v ok">23 passing</span></li>
+        <li><span class="k">pytest (model + parity)</span><span class="v ok">32 passing</span></li>
+        <li><span class="k">release WASM</span><span class="v">205 KB</span></li>
+        <li><span class="k">docs/run.json</span><span class="v">this run</span></li>
+        <li><span class="k">mainnet</span><span class="v">none (testnet only)</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="section-h"><h2>On-chain event history</h2><span class="lbl">emitted by the contract</span></div>
+  <div class="card events">
+    <table>
+      <thead><tr><th>Event</th><th>Account</th><th class="amt">yoctoNEAR</th><th>Detail</th></tr></thead>
+      <tbody id="evbody"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    <b>What this is.</b> A deterministic replay of the settlement core built in
+    <code>contract/src/lib.rs</code>, driven by the offline NEAR client. The figures
+    are computed by the same arithmetic the Rust contract runs, pinned across
+    languages by the parity suite. <br>
+    <b>What this is not.</b> No mainnet, no public testnet receipt yet, no users,
+    no revenue, no audit. See <code>docs/LIMITATIONS.md</code>.
+    Cite: <code>sarkar_settlemint_2026</code>.
+  </footer>
+</div>
+
+<script>
+  // Embedded recorded run (docs/run.json), inlined so the page runs from file://
+  // with no fetch. This is the exact output of scripts/record_run.py.
+  const RUN = {
+    steps: [
+      {method:"create_event", who:"creator.testnet", note:"open a Yes/No market with a named resolver"},
+      {method:"take_position", who:"alice.testnet", side:"Yes", yocto:"2000000000000000000000000", note:"stake 2 NEAR on Yes"},
+      {method:"take_position", who:"carol.testnet", side:"Yes", yocto:"1000000000000000000000000", note:"stake 1 NEAR on Yes"},
+      {method:"take_position", who:"bob.testnet", side:"No", yocto:"2000000000000000000000000", note:"stake 2 NEAR on No"},
+      {method:"resolve", who:"resolver.testnet", note:"outcome Yes, only legal at/after close"},
+      {method:"settle", who:"alice.testnet", yocto:"3333333333333333333333333", note:"pro-rata share, floor 5*2/3"},
+      {method:"settle", who:"carol.testnet", yocto:"1666666666666666666666667", note:"last winner sweeps the dust"}
+    ],
+    poolYes: 3, poolNo: 2, staked: 5,
+    paidYocto: "5000000000000000000000000"
+  };
+  const Y = 1e24;
+
+  const $ = id => document.getElementById(id);
+  const fmtNear = n => (n).toLocaleString(undefined,{maximumFractionDigits:6});
+
+  function reset() {
+    $("phase").className = "phase-pill open"; $("phase").textContent = "Open";
+    $("amtYes").textContent = "0"; $("amtNo").textContent = "0";
+    $("barYes").style.width = "0"; $("barNo").style.width = "0";
+    $("poolYes").classList.remove("win","lose"); $("poolNo").classList.remove("win","lose");
+    $("mPaid").style.width = "0"; $("mDust").style.width = "0";
+    $("paidNear").textContent = "0"; $("stakedNear").textContent = "0";
+    $("escrow").textContent = "0";
+    $("cnote").innerHTML = '<span class="tick">&bull;</span> Escrow held: <span id="escrow">0</span> yocto';
+    // rebuild the log rows, all pending
+    const log = $("log"); log.innerHTML = "";
+    RUN.steps.forEach(s => {
+      const li = document.createElement("li");
+      const detail = s.side ? `${s.side} &middot; ${s.note}` : s.note;
+      li.innerHTML = `<span class="m ${s.method}">${s.method}</span>`
+        + `<span class="d"><span class="who">${s.who}</span> ${detail}</span>`;
+      log.appendChild(li);
+    });
+    $("evbody").innerHTML = "";
+  }
+
+  function addEvent(tag, account, yocto, detail) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><span class="evtag ${tag}">${tag}</span></td>`
+      + `<td>${account||""}</td>`
+      + `<td class="amt">${yocto||""}</td>`
+      + `<td style="color:var(--faint)">${detail||""}</td>`;
+    $("evbody").appendChild(tr);
+  }
+
+  let running = false;
+  async function run() {
+    if (running) return; running = true;
+    reset();
+    const wait = ms => new Promise(r => setTimeout(r, ms));
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const step = reduce ? 90 : 620;
+    const rows = $("log").children;
+
+    // 1. open
+    rows[0].classList.add("done");
+    addEvent("EventCreated", "resolver.testnet", "", "closes at block, void grace 7d");
+    await wait(step);
+
+    // 2-4. stakes
+    let yes = 0, no = 0;
+    const stakes = [["Yes",2],["Yes",1],["No",2]];
+    for (let i = 0; i < 3; i++) {
+      const [side, amt] = stakes[i];
+      if (side === "Yes") yes += amt; else no += amt;
+      $("amtYes").textContent = fmtNear(yes); $("amtNo").textContent = fmtNear(no);
+      const tot = 5;
+      $("barYes").style.width = (yes/tot*100) + "%";
+      $("barNo").style.width = (no/tot*100) + "%";
+      rows[i+1].classList.add("done");
+      const st = RUN.steps[i+1];
+      addEvent("PositionTaken", st.who, st.yocto, side);
+      $("escrow").textContent = ((yes+no)*Y).toLocaleString("fullwide",{useGrouping:false});
+      await wait(step);
+    }
+
+    // 5. resolve
+    $("phase").className = "phase-pill resolved"; $("phase").textContent = "Resolved";
+    $("poolYes").classList.add("win"); $("poolNo").classList.add("lose");
+    rows[4].classList.add("done");
+    addEvent("EventResolved", "resolver.testnet", "", "outcome Yes");
+    await wait(step);
+
+    // 6-7. settle, escrow drains to zero
+    const payouts = [["alice.testnet","3333333333333333333333333",3.333333],
+                     ["carol.testnet","1666666666666666666666667",1.666667]];
+    let paid = 0;
+    for (let i = 0; i < 2; i++) {
+      const [acct, yocto, near] = payouts[i];
+      paid += near;
+      rows[5+i].classList.add("done");
+      addEvent("Settled", acct, yocto, i===1 ? "dust sweep" : "pro-rata");
+      $("paidNear").textContent = fmtNear(paid);
+      $("stakedNear").textContent = "5";
+      // meter: paid portion, and the final dust segment highlighted
+      const pct = Math.min(paid/5*100, 100);
+      if (i === 1) { $("mPaid").style.width = "66.6667%"; $("mDust").style.width = "33.3333%"; }
+      else { $("mPaid").style.width = pct + "%"; }
+      const escrowLeft = (5 - paid);
+      $("escrow").textContent = Math.max(0, Math.round(escrowLeft*Y)).toLocaleString("fullwide",{useGrouping:false});
+      await wait(step);
+    }
+
+    // finalize
+    $("phase").className = "phase-pill settled"; $("phase").textContent = "Settled";
+    addEvent("EventFinalized", "", "0", "escrow drained to zero");
+    $("escrow").textContent = "0";
+    $("cnote").innerHTML = '<span class="tick">&#10003;</span> '
+      + '<span class="zero-strand">Escrow = 0. Payouts equal stakes to the last yocto. Nothing stranded.</span>';
+    running = false;
+  }
+
+  $("run").addEventListener("click", run);
+  $("reset").addEventListener("click", () => { if (!running) reset(); });
+  reset();
+
+  // For a static screenshot of the hero moment: #done renders the settled
+  // end-state immediately (no animation), so docs/ui.png shows escrow at zero.
+  function renderDone() {
+    reset();
+    $("amtYes").textContent = "3"; $("amtNo").textContent = "2";
+    $("barYes").style.width = "60%"; $("barNo").style.width = "40%";
+    $("poolYes").classList.add("win"); $("poolNo").classList.add("lose");
+    $("phase").className = "phase-pill settled"; $("phase").textContent = "Settled";
+    Array.from($("log").children).forEach(li => li.classList.add("done"));
+    $("mPaid").style.width = "66.6667%"; $("mDust").style.width = "33.3333%";
+    $("paidNear").textContent = "5"; $("stakedNear").textContent = "5";
+    addEvent("EventCreated", "resolver.testnet", "", "closes at block, void grace 7d");
+    addEvent("PositionTaken", "alice.testnet", "2000000000000000000000000", "Yes");
+    addEvent("PositionTaken", "carol.testnet", "1000000000000000000000000", "Yes");
+    addEvent("PositionTaken", "bob.testnet", "2000000000000000000000000", "No");
+    addEvent("EventResolved", "resolver.testnet", "", "outcome Yes");
+    addEvent("Settled", "alice.testnet", "3333333333333333333333333", "pro-rata");
+    addEvent("Settled", "carol.testnet", "1666666666666666666666667", "dust sweep");
+    addEvent("EventFinalized", "", "0", "escrow drained to zero");
+    $("cnote").innerHTML = '<span class="tick">&#10003;</span> '
+      + '<span class="zero-strand">Escrow = 0. Payouts equal stakes to the last yocto. Nothing stranded.</span>';
+  }
+  if (location.hash === "#done") renderDone();
+</script>
