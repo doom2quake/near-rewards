@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: "Settlemint: a self-settling event market for NEAR"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: "Sarkar"
+    given-names: "Dipankar"
+repository-code: "https://github.com/doom2quake/settlemint-near"
+abstract: >-
+  A NEAR-native event market that settles itself. A resolver opens a binary
+  Yes/No market with a named function-call access key; stakers commit
+  yoctoNEAR while it is open; when the outcome is known the resolver records it
+  once and an operator pays every winner pro rata in a single resumable pass.
+  The last winning claimant sweeps the rounding dust so escrow lands at exactly
+  zero and no stake is stranded, and a permissionless void escape hatch lets
+  every staker withdraw their own stake if the resolver never resolves. This
+  milestone-1 release is the NEAR Rust settlement core plus a Python mirror kept
+  in cross-language parity by tests. Testnet only, no mainnet.
+keywords:
+  - near-protocol
+  - self-settling-market
+  - pari-mutuel
+  - autonomous-agent
+  - rust
+  - smart-contract
+license: MIT
+version: "0.1.0"
+date-released: "2026-08-26"
