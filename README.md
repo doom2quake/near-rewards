@@ -17,7 +17,7 @@ Rust settlement core, a Python mirror of the same arithmetic held in cross-langu
 parity by tests, a deterministic recorded run, and a self-contained UI. NEAR testnet
 only, never mainnet.
 
-**[▶ Live demo](https://doom2quake.github.io/settlemint/ui/)**  ·  **[Watch the walkthrough](https://youtu.be/SETTLEMINT_VIDEO)**  ·  **[Paper (PDF)](paper/paper.pdf)**  ·  **[Deck (PDF)](deck/deck.pdf)**  ·  Built on **[NEAR](https://near.org/)**
+**[▶ Live demo](https://doom2quake.github.io/settlemint/ui/)**  ·  **[Watch the walkthrough](https://youtu.be/UNwG0FEFkMQ)**  ·  **[Paper (PDF)](paper/paper.pdf)**  ·  **[Deck (PDF)](deck/deck.pdf)**  ·  Built on **[NEAR](https://near.org/)**
 
 Read [docs/LIMITATIONS.md](docs/LIMITATIONS.md) first for the short version of what is
 proved, what is simulated, and what is not built. Nothing on this page contradicts it.
