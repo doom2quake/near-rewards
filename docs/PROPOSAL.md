@@ -1,7 +1,7 @@
 # Settlemint on NEAR: a verifiable settlement agent for autonomous on-chain markets
 
 **Project:** Settlemint
-**Repo slug:** `doom2quake/near-rewards`
+**Repo slug:** `doom2quake/settlemint`
 **Programme:** NEAR Protocol Rewards
 **Applicant:** doom2quake (builder collective)
 **Track:** Autonomous Agent Frameworks / AI-powered DeFi
@@ -95,7 +95,7 @@ ready to port to NEAR-native Rust rather than to design from scratch.
 Most applicants arrive with a plan and no artifact. We arrive with milestone 1 already built
 NEAR-native and green.
 
-**Milestone 1 is built.** This repo (`doom2quake/near-rewards`, at `projects/near-rewards/app`)
+**Milestone 1 is built.** This repo (`doom2quake/settlemint`, at `projects/near-rewards/app`)
 ships the NEAR-native Rust settlement core: `contract/src/lib.rs`, the whole four-phase lifecycle
 (open, resolved, settled, voided) with resolver-only resolution, pro-rata pari-mutuel settlement,
 the last-winner dust sweep, and the permissionless void escape hatch, depending only on
@@ -151,7 +151,7 @@ four suites and two recorded on-chain runs, today.
 
 ## 4. Milestone roadmap
 
-Settlemint is a fresh repo (`doom2quake/near-rewards`) that ports this mechanism to
+Settlemint is a fresh repo (`doom2quake/settlemint`) that ports this mechanism to
 NEAR-native Rust contracts (NEAR is WASM and Rust, not EVM, so this is a genuine reimplementation
 of the state machine and the verification, not a Solidity copy). The milestones are written so
 each one produces the measured GitHub and on-chain activity the rewards programme scores.
@@ -268,7 +268,7 @@ key is required for any milestone.
   title  = {Settlemint: a verifiable settlement agent for autonomous markets on NEAR},
   author = {Dipankar Sarkar},
   year   = {2026},
-  url    = {https://github.com/doom2quake/near-rewards},
+  url    = {https://github.com/doom2quake/settlemint},
   license = {MIT}
 }
 ```

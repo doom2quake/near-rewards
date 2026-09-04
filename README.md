@@ -17,7 +17,7 @@ Rust settlement core, a Python mirror of the same arithmetic held in cross-langu
 parity by tests, a deterministic recorded run, and a self-contained UI. NEAR testnet
 only, never mainnet.
 
-**[▶ Live demo](https://doom2quake.github.io/near-rewards/ui/)**  ·  **[Watch the walkthrough](https://youtu.be/SETTLEMINT_VIDEO)**  ·  **[Paper (PDF)](paper/paper.pdf)**  ·  **[Deck (PDF)](deck/deck.pdf)**  ·  Built on **[NEAR](https://near.org/)**
+**[▶ Live demo](https://doom2quake.github.io/settlemint/ui/)**  ·  **[Watch the walkthrough](https://youtu.be/SETTLEMINT_VIDEO)**  ·  **[Paper (PDF)](paper/paper.pdf)**  ·  **[Deck (PDF)](deck/deck.pdf)**  ·  Built on **[NEAR](https://near.org/)**
 
 Read [docs/LIMITATIONS.md](docs/LIMITATIONS.md) first for the short version of what is
 proved, what is simulated, and what is not built. Nothing on this page contradicts it.
@@ -145,14 +145,14 @@ The full milestone-mapped write-up is in [docs/PROPOSAL.md](docs/PROPOSAL.md).
 
 - **[Paper (PDF)](paper/paper.pdf):** `paper/paper.tex`, a short technical write-up (rebuild: `tectonic paper/paper.tex`).
 - **[Deck (PDF)](deck/deck.pdf):** `deck/deck.md`, a Marp slide deck (rebuild: `marp deck/deck.md --pdf`).
-- **[Live demo](https://doom2quake.github.io/near-rewards/ui/):** `ui/index.html`, the
+- **[Live demo](https://doom2quake.github.io/settlemint/ui/):** `ui/index.html`, the
   self-contained replay of a market from open to settled (also opens offline over `file://`).
   It renders the committed recorded run, so nothing on the page is a typed placeholder.
 - **Walkthrough video:** [`docs/settlemint-demo.mp4`](docs/settlemint-demo.mp4), a narrated
   tour of the problem, the mechanism, the architecture, and the grant roadmap.
 - **Demo script:** `DEMO.md`, the recording kit.
 
-[![Settlemint UI](docs/ui.png)](https://doom2quake.github.io/near-rewards/ui/)
+[![Settlemint UI](docs/ui.png)](https://doom2quake.github.io/settlemint/ui/)
 
 ## Cite
 
@@ -161,7 +161,7 @@ The full milestone-mapped write-up is in [docs/PROPOSAL.md](docs/PROPOSAL.md).
   title   = {Settlemint: a self-settling event market for NEAR},
   author  = {Dipankar Sarkar},
   year    = {2026},
-  url     = {https://github.com/doom2quake/near-rewards},
+  url     = {https://github.com/doom2quake/settlemint},
   license = {MIT}
 }
 ```
